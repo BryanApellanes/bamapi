@@ -26,7 +26,7 @@ namespace Bam.Net.Application
         static string defaultContentRoot = BamHome.Content;
         static string defaultSvcScriptsSrcPath = BamHome.SvcScriptsSrcPath;
 
-        static BamSvcServer _bamSvcServer;
+        static BamApiServer _bamApiServer;
         
         [ConsoleAction("startBamSvcServer", "Start the BamSvc server")]
         public void StartBamSvcServerAndPause()
@@ -39,9 +39,9 @@ namespace Bam.Net.Application
         [ConsoleAction("killBamSvcServer", "Kill the BamSvc server")]
         public void StopBamSvcServer()
         {
-            if (_bamSvcServer != null)
+            if (_bamApiServer != null)
             {
-                _bamSvcServer.Stop();
+                _bamApiServer.Stop();
                 Pause("BamRpc stopped");
             }
             else
@@ -266,25 +266,25 @@ namespace Bam.Net.Application
             {
                 ServiceRegistry.Default = registry;
             }
-            _bamSvcServer = new BamSvcServer(conf, GetLogger(), GetArgument("verbose", "Log responses to the console?").IsAffirmative())
+            _bamApiServer = new BamApiServer(conf, GetLogger(), GetArgument("verbose", "Log responses to the console?").IsAffirmative())
             {
                 HostPrefixes = new HashSet<HostPrefix>(prefixes),
                 MonitorDirectories = new string[] { }                
             };
-            serviceTypes.Each(t => _bamSvcServer.ServiceTypes.Add(t));
+            serviceTypes.Each(t => _bamApiServer.ServiceTypes.Add(t));
 
-            _bamSvcServer.Start();
+            _bamApiServer.Start();
         }
         
         public static void StartBamRpcServer(ConsoleLogger logger)
         {
             BamConf conf = BamConf.Load(DefaultConfiguration.GetAppSetting(contentRootConfigKey).Or(defaultContentRoot));
-            _bamSvcServer = new BamSvcServer(conf, logger, GetArgument("verbose", "Log responses to the console?").IsAffirmative())
+            _bamApiServer = new BamApiServer(conf, logger, GetArgument("verbose", "Log responses to the console?").IsAffirmative())
             {
                 HostPrefixes = new HashSet<HostPrefix>(HostPrefix.FromDefaultConfiguration("localhost", 9100)),
                 MonitorDirectories = DefaultConfiguration.GetAppSetting("MonitorDirectories").DelimitSplit(",", ";")
             };
-            _bamSvcServer.Start();
+            _bamApiServer.Start();
         }
 
         private static ConsoleLogger GetLogger()

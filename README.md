@@ -1,15 +1,15 @@
-# BamSvc
+# BamApi
 
-Use `bamsvc` to expose a class definition as a web service.  Alternatively, use `bamsvc` to expose classes in a registry, or set of registries, as web services. 
+Use `bamapi` to expose a class definition as a web service.  Alternatively, use `bamapi` to expose classes in a registry, or set of registries, as web services. 
 
 # TL;DR
 Serve services:	
 
-bamsvc /serve:[className] /AssemblySearchPattern:[searchPattern]
+bamapi /serve:[className] /AssemblySearchPattern:[searchPattern]
 
 or
 
-bamsvc /registries:[commaSeparatedListOfRegistryNames] /AssemblySearchPattern:[searchPattern]
+bamapi /registries:[commaSeparatedListOfRegistryNames] /AssemblySearchPattern:[searchPattern]
 
 ### Web Service Class
 ```C#
@@ -30,10 +30,10 @@ ServiceProxySystem.Register<Echo>();
 
 ### Web Service Clients
 In addition to automatically exposing any class that you choose as a
-web service, `bamsvc` will also automatically generate clients.
+web service, `bamapi` will also automatically generate clients.
 
 #### C# Clients
-To obtain C# client code simply download the code from a running `bamsvc` server using the following path:
+To obtain C# client code simply download the code from a running `bamapi` server using the following path:
 
 ```
 /ServiceProxy/CSharpProxies
@@ -46,7 +46,7 @@ You may also specify an optional namespace that the clients are defined in
 ```
 
 #### JavaScript Clients
-`bamsvc` also generates JavaScript clients, which
+`bamapi` also generates JavaScript clients, which
 are downloaded in a similar way as the C# clients.  The recommended way
 of acquiring JavaScript clients would be to include a script tag in your pages
 with the src attribute set to the JavaScript proxies path:
