@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>bamsvc.ico</ApplicationIcon>
     <RootNamespace>Bam.Net.Application</RootNamespace>
-    <PackageId>bamrpc.exe</PackageId>
+    <PackageId>bamapi.exe</PackageId>
     <Version>1.0.5-test+b02837c</Version>
     <Authors>Bryan Apellanes</Authors>
     <Company>ThreeHeadz</Company>
