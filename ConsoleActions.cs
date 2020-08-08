@@ -20,7 +20,7 @@ using Bam.Net.CoreServices.ServiceRegistration.Data;
 namespace Bam.Net.Application
 {
     [Serializable]
-    public class ConsoleActions : CommandLineTestInterface
+    public class ConsoleActions : CommandLineTool
     {
         static string contentRootConfigKey = "ContentRoot";
         static string defaultContentRoot = BamHome.Content;
