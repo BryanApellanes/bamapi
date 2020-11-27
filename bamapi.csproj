@@ -5,7 +5,7 @@
     <ApplicationIcon>bamsvc.ico</ApplicationIcon>
     <RootNamespace>Bam.Net.Application</RootNamespace>
     <PackageId>bamapi.exe</PackageId>
-    <Version>1.0.5-test+544610b</Version>
+    <Version>1.0.5-test+3f0d1b6</Version>
     <Authors>Bryan Apellanes</Authors>
     <Company>ThreeHeadz</Company>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
