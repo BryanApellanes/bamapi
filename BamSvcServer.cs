@@ -50,7 +50,8 @@ namespace Bam.Net.Application
             }
             base.Start();
         }
-        object _serviceTypeLock = new object();
+
+        readonly object _serviceTypeLock = new object();
         public HashSet<Type> ServiceTypes { get; private set; }
         protected ServiceProxyResponder RegisterServiceTypes(IEnumerable<Type> serviceTypes)
         {
