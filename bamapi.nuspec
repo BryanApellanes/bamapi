@@ -1,7 +1,7 @@
 ﻿<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>bamapi</id>
-    <version>1.0.5-test+c6a886b</version>
+    <version>1.0.5-test+8dd2961</version>
     <authors>Bryan Apellanes</authors>
     <description>bamapi</description>
   </metadata>
