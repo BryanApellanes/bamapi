@@ -77,8 +77,8 @@ namespace Bam.Net.Application
             catch (Exception ex)
             {
                 Args.PopMessageAndStackTrace(ex, out StringBuilder message, out StringBuilder stackTrace);
-                OutLineFormat("An error occurred: {0}", ConsoleColor.Red, message.ToString());
-                OutLineFormat("{0}", stackTrace.ToString());
+                Message.PrintLine("An error occurred: {0}", ConsoleColor.Red, message.ToString());
+                Message.PrintLine("{0}", stackTrace.ToString());
                 Thread.Sleep(1500);
             }
         }
@@ -117,11 +117,11 @@ namespace Bam.Net.Application
                     Assembly assembly = Assembly.LoadFrom(assemblyPath);
                     if(assembly == null)
                     {
-                        OutLineFormat("Assembly not found: {0}", ConsoleColor.Magenta, assemblyPath);
+                        Message.PrintLine("Assembly not found: {0}", ConsoleColor.Magenta, assemblyPath);
                     }
                     else
                     {
-                        OutLineFormat("Storing assembly file chunks: {0}", ConsoleColor.Cyan, assembly.FullName);
+                        Message.PrintLine("Storing assembly file chunks: {0}", ConsoleColor.Cyan, assembly.FullName);
                         serviceRegistryService.FileService.StoreFileChunks(assembly.GetFileInfo(), assembly.FullName);
                         string className = "\r\n";
                         while (!className.Equals(string.Empty))
@@ -132,7 +132,7 @@ namespace Bam.Net.Application
                                 if(type == null)
                                 {
                                     Thread.Sleep(300);
-                                    OutLineFormat("Specified class was not found in the current assembly: {0}", assembly.FullName);
+                                    Message.PrintLine("Specified class was not found in the current assembly: {0}", assembly.FullName);
                                 }
                                 else
                                 {
@@ -173,7 +173,7 @@ namespace Bam.Net.Application
             }
             string filePath = Path.Combine(directory, $"{typeName}_{proxyFactory.DefaultSettings.Protocol.ToString()}_{host}_{port}_Proxy.cs");
             response.Data.ToString().SafeWriteToFile(filePath);
-            OutLineFormat("Wrote file {0}", filePath);
+            Message.PrintLine("Wrote file {0}", filePath);
         }
 
         [ConsoleAction("csBamSvc", "Start the BamSvc server serving the compiled results of the specified csBamRpc files")]
