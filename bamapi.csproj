@@ -5,7 +5,7 @@
     <ApplicationIcon>bamsvc.ico</ApplicationIcon>
     <RootNamespace>Bam.Net.Application</RootNamespace>
     <PackageId>bamapi.exe</PackageId>
-    <Version>1.0.5-test+8dd2961</Version>
+    <Version>1.0.5-test+69503de</Version>
     <Authors>Bryan Apellanes</Authors>
     <Company>ThreeHeadz</Company>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -14,6 +14,12 @@
     <IntermediatePackDir>$(MSBuildProjectDirectory)/bin/$(Configuration)/</IntermediatePackDir>
     <PublishDir>$(IntermediatePackDir)$(TargetFramework)/</PublishDir>
     <NuspecProperties>publishDir=$([MSBuild]::NormalizeDirectory($(IntermediatePackDir)))</NuspecProperties>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>\opt\bam\build\bamapi\debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>\opt\bam\build\bamapi\release</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="bamsvc.ico" />
