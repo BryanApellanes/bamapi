@@ -5,21 +5,18 @@
     <ApplicationIcon>bamsvc.ico</ApplicationIcon>
     <RootNamespace>Bam.Net.Application</RootNamespace>
     <PackageId>bamapi.exe</PackageId>
-    <Version>1.0.6-test+fa67179</Version>
+    <Version>1.0.6-f59c035</Version>
     <Authors>Bryan Apellanes</Authors>
     <Company>ThreeHeadz</Company>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NuspecFile>bamapi.nuspec</NuspecFile>
-    <IntermediatePackDir>$(MSBuildProjectDirectory)/bin/$(Configuration)/</IntermediatePackDir>
+    <IntermediatePackDir>/opt/bam/build/$(Configuration)/$(MSBuildThisFileName)/</IntermediatePackDir>
     <PublishDir>$(IntermediatePackDir)$(TargetFramework)/</PublishDir>
     <NuspecProperties>publishDir=$([MSBuild]::NormalizeDirectory($(IntermediatePackDir)))</NuspecProperties>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>\opt\bam\build\debug\bamapi\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>\opt\bam\build\release\bamapi\</OutputPath>
+  <PropertyGroup>
+    <OutputPath>\opt\bam\build\$(Configuration)\$(MSBuildThisFileName)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="bamsvc.ico" />
