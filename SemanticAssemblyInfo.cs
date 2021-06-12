@@ -3,7 +3,7 @@ using Bam.Net;
 
 [assembly: AssemblyVersion("1.0.6.0")]
 [assembly: AssemblyFileVersion("1.0.6.0")]
-[assembly: AssemblyCommit("f59c035")]
-[assembly: AssemblySemanticVersion("1.0.6-f59c035")]
-[assembly: AssemblyDescription("SemanticVersion=1.0.6-f59c035, Revision=1.0.6.4069774235")]
+[assembly: AssemblyCommit("18ea5b7")]
+[assembly: AssemblySemanticVersion("1.0.6-18ea5b7")]
+[assembly: AssemblyDescription("SemanticVersion=1.0.6-18ea5b7, Revision=1.0.6.552749054")]
 [assembly: AssemblyProduct("bamapi")]
