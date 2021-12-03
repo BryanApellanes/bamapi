@@ -28,7 +28,7 @@ namespace Bam.Net.Application
 
         static BamApiServer _bamApiServer;
         
-        [ConsoleAction("startBamSvcServer", "Start the BamSvc server")]
+        [ConsoleAction("startBamApiServer", "Start the BamApi server")]
         public void StartBamSvcServerAndPause()
         {
             ConsoleLogger logger = GetLogger();
@@ -36,7 +36,7 @@ namespace Bam.Net.Application
             Pause("BamRpc is running");
         }
 
-        [ConsoleAction("killBamSvcServer", "Kill the BamSvc server")]
+        [ConsoleAction("killBamApiServer", "Kill the BamApi server")]
         public void StopBamSvcServer()
         {
             if (_bamApiServer != null)
@@ -50,7 +50,7 @@ namespace Bam.Net.Application
             }
         }
 
-        [ConsoleAction("serve", "Start the BamSvc server serving a specific service class")]
+        [ConsoleAction("serve", "Start the BamApi server serving a specific service class")]
         public void Serve()
         {
             try
@@ -83,7 +83,7 @@ namespace Bam.Net.Application
             }
         }
 
-        [ConsoleAction("registries", "Start the BamSvc server serving the registries of the specified names")]
+        [ConsoleAction("registries", "Start the BamApi server serving the registries of the specified names")]
         public void ServeRegistries()
         {
             ConsoleLogger logger = GetLogger();
@@ -91,7 +91,7 @@ namespace Bam.Net.Application
             ServeRegistries(logger, registries);
         }
         
-        [ConsoleAction("app", "Start the svc server serving the registry for the current application (determined by the default configuration file ApplicationName value)")]
+        [ConsoleAction("app", "Start the BamApi server serving the registry for the current application (determined by the default configuration file ApplicationName value)")]
         public void ServeApplicationRegistry()
         {
             ConsoleLogger logger = GetLogger();
@@ -176,11 +176,11 @@ namespace Bam.Net.Application
             Message.PrintLine("Wrote file {0}", filePath);
         }
 
-        [ConsoleAction("csBamSvc", "Start the BamSvc server serving the compiled results of the specified csBamRpc files")]
+        [ConsoleAction("csBamApi", "Start the BamApi server serving the compiled results of the specified csBamRpc files")]
         public void ServeCsService()
         {
             string csglooDirectoryPath = GetArgument("BamRpcSrc", $"Enter the path to the BamSvc source directory (default: {defaultSvcScriptsSrcPath})");
-            Assembly bamRpcAssembly = CompileBamSvcSource(csglooDirectoryPath, "csBamRpc");
+            Assembly bamRpcAssembly = CompileBamApiSvcSource(csglooDirectoryPath, "csBamRpc");
 
             string contentRoot = GetArgument("ContentRoot", $"Enter the path to the content root (default: {defaultContentRoot} ");
 
@@ -190,9 +190,9 @@ namespace Bam.Net.Application
             Pause($"BamRpc server is serving cs types: {string.Join(", ", glooTypes.Select(t => t.Name).ToArray())}");
         }
 
-        public static Assembly CompileBamSvcSource(string bamSvcDirectoryPath, string extension)
+        public static Assembly CompileBamApiSvcSource(string bamSvcDirectoryPath, string extension)
         {
-            string binPath = Path.Combine(BamHome.ToolkitPath, "BamSvc_bin");
+            string binPath = Path.Combine(BamHome.ToolkitPath, "BamApi_bin");
             DirectoryInfo bamSvcSrcDirectory = new DirectoryInfo(bamSvcDirectoryPath.Or(defaultSvcScriptsSrcPath)).EnsureExists();
             DirectoryInfo bamSvcBnDirectory = new DirectoryInfo(binPath).EnsureExists();
             FileInfo[] files = bamSvcSrcDirectory.GetFiles($"*.{extension}", SearchOption.AllDirectories);

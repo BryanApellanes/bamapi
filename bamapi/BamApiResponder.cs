@@ -8,10 +8,10 @@ using System.Collections.Generic;
 
 namespace Bam.Net.Application
 {
-    public class BamSvcResponder : HttpHeaderResponder, IInitialize<BamSvcResponder>
+    public class BamApiResponder : HttpHeaderResponder, IInitialize<BamApiResponder>
     {
         readonly Dictionary<string, IResponder> _responders;
-        public BamSvcResponder(BamConf conf, ILogger logger, bool verbose = false)
+        public BamApiResponder(BamConf conf, ILogger logger, bool verbose = false)
             : base(conf, logger)
         {
             RendererFactory = new WebRendererFactory(logger);
@@ -50,7 +50,7 @@ namespace Bam.Net.Application
         {
             if (!TryRespond(context))
             {
-                SendResponse(context, 404, new { BamServer = "Bam Rpc Server" } );
+                SendResponse(context, new HttpStatusCodeHandler { Code = 404, DefaultResponse = "Not Found" }, new { BamServer = "Bam Rpc Server" } );
             }
             context.Response.Close();
             return true;
@@ -77,8 +77,8 @@ namespace Bam.Net.Application
             }
         }
 
-        public event Action<BamSvcResponder> Initializing;
-        public event Action<BamSvcResponder> Initialized;
+        public event Action<BamApiResponder> Initializing;
+        public event Action<BamApiResponder> Initialized;
 
         public override void Initialize()
         {
