@@ -23,7 +23,7 @@ namespace Bam.Net.Application
     public class ConsoleActions : CommandLineTool
     {
         static string contentRootConfigKey = "ContentRoot";
-        static string defaultContentRoot = BamHome.Content;
+        static string defaultContentRoot = BamHome.ContentPath;
         static string defaultSvcScriptsSrcPath = BamHome.SvcScriptsSrcPath;
 
         static BamApiServer _bamApiServer;
@@ -33,7 +33,7 @@ namespace Bam.Net.Application
         {
             ConsoleLogger logger = GetLogger();
             StartBamRpcServer(logger);
-            Pause("BamRpc is running");
+            Pause("BamApi is running");
         }
 
         [ConsoleAction("killBamApiServer", "Kill the BamApi server")]
@@ -42,11 +42,11 @@ namespace Bam.Net.Application
             if (_bamApiServer != null)
             {
                 _bamApiServer.Stop();
-                Pause("BamRpc stopped");
+                Pause("BamApi stopped");
             }
             else
             {
-                OutLine("BamRpc server not running");
+                Message.PrintLine("BamApi server not running");
             }
         }
 
@@ -72,7 +72,7 @@ namespace Bam.Net.Application
                 }
 
                 ServeServiceTypes(contentRoot, prefixes, null, serviceType);
-                Pause($"Gloo server is serving service {serviceClassName}");
+                Pause($"BamApi server is serving service {serviceClassName}");
             }
             catch (Exception ex)
             {
@@ -176,10 +176,10 @@ namespace Bam.Net.Application
             Message.PrintLine("Wrote file {0}", filePath);
         }
 
-        [ConsoleAction("csBamApi", "Start the BamApi server serving the compiled results of the specified csBamRpc files")]
+        [ConsoleAction("BamApiSrc", "Start the BamApi server serving the compiled results of the specified BamApiSrc files")]
         public void ServeCsService()
         {
-            string csglooDirectoryPath = GetArgument("BamRpcSrc", $"Enter the path to the BamSvc source directory (default: {defaultSvcScriptsSrcPath})");
+            string csglooDirectoryPath = GetArgument("BamApiSrc", $"Enter the path to the BamApiSrc source directory (default: {defaultSvcScriptsSrcPath})");
             Assembly bamRpcAssembly = CompileBamApiSvcSource(csglooDirectoryPath, "csBamRpc");
 
             string contentRoot = GetArgument("ContentRoot", $"Enter the path to the content root (default: {defaultContentRoot} ");
@@ -255,7 +255,7 @@ namespace Bam.Net.Application
 
             HostPrefix[] hostPrefixes = ServiceConfig.GetConfiguredHostPrefixes();
             ServeServiceTypes(contentRoot, hostPrefixes, allTypes, services);
-            hostPrefixes.Each(h => OutLine(h.ToString(), ConsoleColor.Blue));
+            hostPrefixes.Each(h => Message.PrintLine(h.ToString(), ConsoleColor.Blue));
             Pause($"BamRpc server is serving services\r\n\t{services.ToArray().ToDelimited(s => s.FullName, "\r\n\t")}");
         }
 
