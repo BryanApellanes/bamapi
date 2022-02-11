@@ -2,7 +2,7 @@ using Bam.Net.Configuration;
 using Bam.Net.CoreServices;
 using Bam.Net.Logging;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.IO;
