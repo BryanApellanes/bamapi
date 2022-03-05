@@ -27,7 +27,7 @@ namespace Bam.Net.Application
         }
     }
 
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("glooApiKeyRequiredSvc")]
     public class BamRpcApiKeyRequiredTestService
     {

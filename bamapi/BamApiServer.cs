@@ -79,7 +79,7 @@ namespace Bam.Net.Application
                 ctx.Responder.AddCommonService(serviceType, ServiceRegistry.GetServiceLoader(serviceType));
                 ctx.Logger.AddEntry("Added service: {0}", serviceType.FullName);
             });
-            IApiSigningKeyResolver apiKeyResolver = (IApiSigningKeyResolver)ServiceRegistry.GetServiceLoader(typeof(IApiSigningKeyResolver), new CoreClient())();
+            IApiHmacKeyResolver apiKeyResolver = (IApiHmacKeyResolver)ServiceRegistry.GetServiceLoader(typeof(IApiHmacKeyResolver), new CoreClient())();
             responder.CommonSecureChannel.ApiKeyResolver = apiKeyResolver;
             responder.AppSecureChannels.Values.Each(sc => sc.ApiKeyResolver = apiKeyResolver);
         }
