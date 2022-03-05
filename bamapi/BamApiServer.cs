@@ -80,8 +80,8 @@ namespace Bam.Net.Application
                 ctx.Logger.AddEntry("Added service: {0}", serviceType.FullName);
             });
             IApiHmacKeyResolver apiKeyResolver = (IApiHmacKeyResolver)ServiceRegistry.GetServiceLoader(typeof(IApiHmacKeyResolver), new CoreClient())();
-            responder.CommonSecureChannel.ApiKeyResolver = apiKeyResolver;
-            responder.AppSecureChannels.Values.Each(sc => sc.ApiKeyResolver = apiKeyResolver);
+            responder.CommonSecureChannel.ApiHmacKeyResolver = apiKeyResolver;
+            responder.AppSecureChannels.Values.Each(sc => sc.ApiHmacKeyResolver = apiKeyResolver);
         }
 
         Timer reloadDelay;
