@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Timers;
 using Bam.Net.Services.Clients;
+using Bam.Net.Services;
 
 namespace Bam.Net.Application
 {
@@ -36,7 +37,7 @@ namespace Bam.Net.Application
         
         public override void Start()
         {
-            if(MonitorDirectories.Length > 0)
+            if (MonitorDirectories.Length > 0)
             {
                 ServiceTypes.Clear();
                 MonitorDirectories.Each(new { Server = this }, (ctx, dir) =>

@@ -28,15 +28,15 @@ namespace Bam.Net.Application
 
         static BamApiServer _bamApiServer;
         
-        [ConsoleAction("startBamApiServer", "Start the BamApi server")]
+        [ConsoleAction("start", "Start the BamApi server")]
         public void StartBamSvcServerAndPause()
         {
             ConsoleLogger logger = GetLogger();
-            StartBamRpcServer(logger);
+            StartBamApiServer(logger);
             Pause("BamApi is running");
         }
 
-        [ConsoleAction("killBamApiServer", "Kill the BamApi server")]
+        [ConsoleAction("kill", "Kill the BamApi server")]
         public void StopBamSvcServer()
         {
             if (_bamApiServer != null)
@@ -62,16 +62,16 @@ namespace Bam.Net.Application
                 {
                     throw new InvalidOperationException($"The type {serviceClassName} was not found in the assembly {assembly.GetFilePath()}");
                 }
-                HostPrefix[] prefixes = ServiceConfig.GetConfiguredHostPrefixes();
+                HostBinding[] binding = ServiceConfig.GetConfiguredHostBindings();
                 if (serviceType.HasCustomAttributeOfType(out ServiceSubdomainAttribute attr))
                 {
-                    foreach(HostPrefix prefix in prefixes)
+                    foreach(HostBinding prefix in binding)
                     {
                         prefix.HostName = $"{attr.Subdomain}.{prefix.HostName}";
                     }
                 }
 
-                ServeServiceTypes(contentRoot, prefixes, null, serviceType);
+                ServeServiceTypes(contentRoot, binding, null, serviceType);
                 Pause($"BamApi server is serving service {serviceClassName}");
             }
             catch (Exception ex)
@@ -180,14 +180,14 @@ namespace Bam.Net.Application
         public void ServeCsService()
         {
             string csglooDirectoryPath = GetArgument("BamApiSrc", $"Enter the path to the BamApiSrc source directory (default: {defaultSvcScriptsSrcPath})");
-            Assembly bamRpcAssembly = CompileBamApiSvcSource(csglooDirectoryPath, "csBamRpc");
+            Assembly bamRpcAssembly = CompileBamApiSvcSource(csglooDirectoryPath, "bcs");
 
             string contentRoot = GetArgument("ContentRoot", $"Enter the path to the content root (default: {defaultContentRoot} ");
 
-            HostPrefix[] prefixes = ServiceConfig.GetConfiguredHostPrefixes();
+            HostBinding[] prefixes = ServiceConfig.GetConfiguredHostBindings();
             Type[] glooTypes = bamRpcAssembly.GetTypes().Where(t => t.HasCustomAttributeOfType<ProxyAttribute>()).ToArray();
             ServeServiceTypes(contentRoot, prefixes, null, glooTypes);
-            Pause($"BamRpc server is serving cs types: {string.Join(", ", glooTypes.Select(t => t.Name).ToArray())}");
+            Pause($"BamApi server is serving cs types: {string.Join(", ", glooTypes.Select(t => t.Name).ToArray())}");
         }
 
         public static Assembly CompileBamApiSvcSource(string bamSvcDirectoryPath, string extension)
@@ -253,13 +253,13 @@ namespace Bam.Net.Application
                 throw new ArgumentException("No services were loaded");
             }
 
-            HostPrefix[] hostPrefixes = ServiceConfig.GetConfiguredHostPrefixes();
+            HostBinding[] hostPrefixes = ServiceConfig.GetConfiguredHostBindings();
             ServeServiceTypes(contentRoot, hostPrefixes, allTypes, services);
             hostPrefixes.Each(h => Message.PrintLine(h.ToString(), ConsoleColor.Blue));
             Pause($"BamRpc server is serving services\r\n\t{services.ToArray().ToDelimited(s => s.FullName, "\r\n\t")}");
         }
 
-        public static void ServeServiceTypes(string contentRoot, HostPrefix[] prefixes, ServiceRegistry registry = null, params Type[] serviceTypes)
+        public static void ServeServiceTypes(string contentRoot, HostBinding[] prefixes, ServiceRegistry registry = null, params Type[] serviceTypes)
         {
             BamConf conf = BamConf.Load(contentRoot.Or(defaultContentRoot));
             if(registry != null && ServiceRegistry.Default == null)
@@ -268,7 +268,7 @@ namespace Bam.Net.Application
             }
             _bamApiServer = new BamApiServer(conf, GetLogger(), GetArgument("verbose", "Log responses to the console?").IsAffirmative())
             {
-                HostPrefixes = new HashSet<HostPrefix>(prefixes),
+                HostBindings = new HashSet<HostBinding>(prefixes),
                 MonitorDirectories = new string[] { }                
             };
             serviceTypes.Each(t => _bamApiServer.ServiceTypes.Add(t));
@@ -276,12 +276,16 @@ namespace Bam.Net.Application
             _bamApiServer.Start();
         }
         
-        public static void StartBamRpcServer(ConsoleLogger logger)
+        public static void StartBamApiServer(ConsoleLogger logger)
         {
             BamConf conf = BamConf.Load(DefaultConfiguration.GetAppSetting(contentRootConfigKey).Or(defaultContentRoot));
+
             _bamApiServer = new BamApiServer(conf, logger, GetArgument("verbose", "Log responses to the console?").IsAffirmative())
             {
-                HostPrefixes = new HashSet<HostPrefix>(HostPrefix.FromDefaultConfiguration("localhost", 9100)),
+                HostBindings = new HashSet<HostBinding>
+                (
+                    HostBinding.FromDefaultConfiguration("localhost", GetIntArgumentOrDefault("port", 9100))
+                ),
                 MonitorDirectories = DefaultConfiguration.GetAppSetting("MonitorDirectories").DelimitSplit(",", ";")
             };
             _bamApiServer.Start();

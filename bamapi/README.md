@@ -48,7 +48,7 @@ You may also specify an optional namespace that the clients are defined in
 #### JavaScript Clients
 `bamapi` also generates JavaScript clients, which
 are downloaded in a similar way as the C# clients.  The recommended way
-of acquiring JavaScript clients would be to include a script tag in your pages
+of acquiring JavaScript clients is to include a script tag in your pages
 with the src attribute set to the JavaScript proxies path:
 
 ```html
@@ -78,5 +78,5 @@ public class YourClassName
 To serve your registry do the following:
 
 ```
-bamsvc /serve:YourRegistryName
+bamapi /serve:YourRegistryName
 ```

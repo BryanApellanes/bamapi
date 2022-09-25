@@ -12,15 +12,15 @@ namespace gloo.Test
 {
     [Serializable]
     [ServiceRegistryContainer]
-    public class BamRpcTestRegistry
+    public class BamApiTestRegistry
     {
-        [ServiceRegistryLoader("BamRpcTestRegistry", ProcessModes.Dev, ProcessModes.Test)]
+        [ServiceRegistryLoader(nameof(BamApiTestRegistry), ProcessModes.Dev, ProcessModes.Test)]
         public static ServiceRegistry CreateTestRegistry()
         {
             return ServiceRegistry.Create()
-                .For<BamRpcTestService>().Use<BamRpcTestService>()
-                .For<BamRpcEncryptedTestService>().Use<BamRpcEncryptedTestService>()
-                .For<BamRpcApiKeyRequiredTestService>().Use<BamRpcApiKeyRequiredTestService>()
+                .For<BamApiTestService>().Use<BamApiTestService>()
+                .For<BamApiEncryptedTestService>().Use<BamApiEncryptedTestService>()
+                .For<BamApiKeyRequiredTestService>().Use<BamApiKeyRequiredTestService>()
                 .Cast<ServiceRegistry>();
         }
     }

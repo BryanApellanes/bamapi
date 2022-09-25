@@ -13,7 +13,7 @@ namespace Bam.Net.Application
     public class BamApiServiceRegistry : ApplicationServiceRegistry
     {
         [ServiceRegistryLoader]
-        public static BamApiServiceRegistry ForConfiguration(ApiConfig config, ILogger logger = null)
+        public static BamApiServiceRegistry ForConfiguration(ApiConf config, ILogger logger = null)
         {
             BamApiServiceRegistry bamApiServiceRegistry = new BamApiServiceRegistry();
             bamApiServiceRegistry.CombineWith(Configure(appRegistry =>
