@@ -14,8 +14,22 @@ using Bam.Net.Services;
 
 namespace Bam.Application
 {
-    public class BamApiServer: SimpleServer<BamApiResponder>
+    public class BamApiServer : SimpleServer<BamApiResponder>, IManagedServer
     {
+        public BamApiServer(params HostBinding[] hostBindings): this(new BamConf(), Log.Default, false)
+        {
+            SetHostBindings(hostBindings);
+        }
+
+        public BamApiServer(bool verbose, params HostBinding[] hostBindings) : this(new BamConf(), Log.Default, verbose)
+        { 
+            SetHostBindings(hostBindings);
+        }
+
+        public BamApiServer(ILogger logger, bool verbose = false): this(new BamConf(), logger, verbose)
+        {
+        }
+
         public BamApiServer(BamConf conf, ILogger logger, bool verbose = false)
             : base(new BamApiResponder(conf, logger, verbose), logger)
         {
@@ -72,6 +86,16 @@ namespace Bam.Application
             return responder;
         }
 
+        private HostBinding[] SetHostBindings(HostBinding[] hostBindings)
+        {
+            if (hostBindings == null || hostBindings.Length == 0)
+            {
+                hostBindings = new HostBinding[] { new HostBinding() };
+            }
+            HostBindings = new HashSet<HostBinding>(hostBindings);
+            return hostBindings;
+        }
+
         private void AddCommonServices(ServiceProxyResponder responder)
         {
             ServiceTypes.Each(new {  Logger, Responder = responder }, (ctx, serviceType) =>
@@ -88,7 +112,7 @@ namespace Bam.Application
         Timer reloadDelay;
         private void ReloadServices(FileSystemEventArgs fsea)
         {
-            if(reloadDelay != null)
+            if (reloadDelay != null)
             {
                 reloadDelay.Stop();
                 reloadDelay.Dispose();

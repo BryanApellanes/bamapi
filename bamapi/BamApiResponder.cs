@@ -54,7 +54,7 @@ namespace Bam.Application
         {
             if (!TryRespond(context))
             {
-                SendResponse(context, new HttpStatusCodeHandler { Code = 404, DefaultResponse = "Not Found" }, new { BamServer = "Bam Rpc Server" } );
+                SendResponse(context, new HttpStatusCodeHandler { Code = 404, DefaultResponse = "Not Found" }, new { BamServer = "Bam Api Server" } );
             }
             context.Response.Close();
             return true;
