@@ -17,7 +17,7 @@ using System.Threading;
 using Bam.Net.Yaml;
 using Bam.Net.CoreServices.ServiceRegistration.Data;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     [Serializable]
     public class ConsoleActions : CommandLineTool

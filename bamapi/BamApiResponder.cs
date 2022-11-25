@@ -6,7 +6,7 @@ using Bam.Net.ServiceProxy;
 using System;
 using System.Collections.Generic;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     public class BamApiResponder : HttpHeaderResponder, IInitialize<BamApiResponder>
     {

@@ -12,7 +12,7 @@ using System.Timers;
 using Bam.Net.Services.Clients;
 using Bam.Net.Services;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     public class BamApiServer: SimpleServer<BamApiResponder>
     {

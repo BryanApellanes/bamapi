@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     public class BamApiServiceRegistry : ApplicationServiceRegistry
     {

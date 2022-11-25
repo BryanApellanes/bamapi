@@ -7,9 +7,9 @@ using Bam.Net;
 using Bam.Net.Encryption;
 using Bam.Net.ServiceProxy.Encryption;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
-    [Proxy("glooTestSvc")]
+    [Proxy("testSvc")]
     public class BamApiTestService
     {
         public BamApiMonkey GetMonkey(string name)
@@ -19,7 +19,7 @@ namespace Bam.Net.Application
     }
 
     [Encrypt]
-    [Proxy("glooEncryptedTestSvc")]
+    [Proxy("encryptedTestSvc")]
     public class BamApiEncryptedTestService
     {
         public BamApiMonkey GetMonkey(string name)
@@ -29,7 +29,7 @@ namespace Bam.Net.Application
     }
 
     [ApiHmacKeyRequired]
-    [Proxy("glooApiKeyRequiredSvc")]
+    [Proxy("apiHmacKeyRequiredSvc")]
     public class BamApiKeyRequiredTestService
     {
         public BamApiMonkey GetMonkey(string name)

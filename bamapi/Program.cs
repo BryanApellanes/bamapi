@@ -3,7 +3,7 @@ using Bam.Net.Testing;
 using System;
 using System.Threading;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     [Serializable]
     class Program : CommandLineTool

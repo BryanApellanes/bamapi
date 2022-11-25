@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Application.Test
+namespace Bam.Application.Test
 {
     public class IntegrationTests
     {

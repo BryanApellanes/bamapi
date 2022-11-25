@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Incubation;
-using Bam.Net.Application;
+using Bam.Application;
 
 namespace gloo.Test
 {

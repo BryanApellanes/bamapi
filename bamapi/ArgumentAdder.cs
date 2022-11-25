@@ -1,6 +1,6 @@
 ﻿using Bam.Net.CommandLine;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     internal class ArgumentAdder: CommandLineInterface
     {
