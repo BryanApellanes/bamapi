@@ -1,3 +1,4 @@
+using Bam.Net;
 using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.Server.JsonRpc;

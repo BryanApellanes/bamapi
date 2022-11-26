@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Bam.Net.Incubation;
 using Bam.Application;
 
-namespace gloo.Test
+namespace Bam.Application.Test.Data
 {
     [Serializable]
     [ServiceRegistryContainer]

@@ -1,10 +1,11 @@
+using Bam.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Application
+namespace Bam.Application.Test.Data
 {
     public class BamApiMonkey
     {

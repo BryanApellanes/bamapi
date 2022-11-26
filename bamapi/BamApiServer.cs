@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Timers;
 using Bam.Net.Services.Clients;
 using Bam.Net.Services;
+using Bam.Net;
 
 namespace Bam.Application
 {

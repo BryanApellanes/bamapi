@@ -1,3 +1,4 @@
+using Bam.Net;
 using Bam.Net.CommandLine;
 using Bam.Net.Testing;
 using System;

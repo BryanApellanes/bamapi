@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using Bam.Net.Yaml;
 using Bam.Net.CoreServices.ServiceRegistration.Data;
+using Bam.Net;
 
 namespace Bam.Application
 {
@@ -71,7 +72,7 @@ namespace Bam.Application
                     }
                 }
 
-                ServeServiceTypes(contentRoot, binding, null, serviceType);
+                BamApi.ServeServiceTypesAsync(binding, serviceType);
                 Pause($"BamApi server is serving service {serviceClassName}");
             }
             catch (Exception ex)
@@ -88,14 +89,14 @@ namespace Bam.Application
         {
             ConsoleLogger logger = GetLogger();
             string registries = GetArgument("registries", "Enter the registry names to serve in a comma separated list ");
-            ServeRegistries(logger, registries);
+            ServeRegistries(registries, logger);
         }
         
         [ConsoleAction("app", "Start the BamApi server serving the registry for the current application (determined by the default configuration file ApplicationName value)")]
         public void ServeApplicationRegistry()
         {
             ConsoleLogger logger = GetLogger();
-            ServeRegistries(logger, DefaultConfigurationApplicationNameProvider.Instance.GetApplicationName());
+            ServeRegistries(DefaultConfigurationApplicationNameProvider.Instance.GetApplicationName(), logger);
         }
 
         [ConsoleAction("createRegistry", "Menu driven Service Registry creation")]
@@ -165,7 +166,7 @@ namespace Bam.Application
             string typeName = GetArgument("typeName", "Please specify the name of the type to get code for");
             string directory = GetArgument("output", "Please specify the directory to write downloaded source to");
             ProxyAssemblyGeneratorService genSvc = proxyFactory.GetProxy<ProxyAssemblyGeneratorService>(host, port, logger);
-            Services.ServiceResponse response = genSvc.GetProxyCode(nameSpace, typeName);
+            Net.Services.ServiceResponse response = genSvc.GetProxyCode(nameSpace, typeName);
             if (!response.Success)
             {
                 Warn(response.Message);
@@ -179,103 +180,33 @@ namespace Bam.Application
         [ConsoleAction("BamApiSrc", "Start the BamApi server serving the compiled results of the specified BamApiSrc files")]
         public void ServeCsService()
         {
-            string csglooDirectoryPath = GetArgument("BamApiSrc", $"Enter the path to the BamApiSrc source directory (default: {defaultSvcScriptsSrcPath})");
-            Assembly bamRpcAssembly = CompileBamApiSvcSource(csglooDirectoryPath, "bcs");
+            string bamApiSrcDirectoryPath = GetArgument("BamApiSrc", $"Enter the path to the BamApiSrc source directory (default: {defaultSvcScriptsSrcPath})");
+            Assembly bamApiAssembly = BamApi.CompileBamApiServiceSource(bamApiSrcDirectoryPath, "bcs").Result;
 
             string contentRoot = GetArgument("ContentRoot", $"Enter the path to the content root (default: {defaultContentRoot} ");
 
-            HostBinding[] prefixes = ServiceConfig.GetConfiguredHostBindings();
-            Type[] glooTypes = bamRpcAssembly.GetTypes().Where(t => t.HasCustomAttributeOfType<ProxyAttribute>()).ToArray();
-            ServeServiceTypes(contentRoot, prefixes, null, glooTypes);
-            Pause($"BamApi server is serving cs types: {string.Join(", ", glooTypes.Select(t => t.Name).ToArray())}");
+            HostBinding[] hostBindings = ServiceConfig.GetConfiguredHostBindings();
+            Type[] serviceTypes = bamApiAssembly.GetTypes().Where(t => t.HasCustomAttributeOfType<ProxyAttribute>()).ToArray();
+            BamApi.ServeServiceTypesAsync(hostBindings, serviceTypes);
+
+            Pause($"BamApi server is serving cs types: {string.Join(", ", serviceTypes.Select(t => t.Name).ToArray())}");
         }
 
-        public static Assembly CompileBamApiSvcSource(string bamSvcDirectoryPath, string extension)
+        private static void ServeRegistries(string registries, ILogger logger = null)
         {
-            string binPath = Path.Combine(BamHome.ToolkitPath, "BamApi_bin");
-            DirectoryInfo bamSvcSrcDirectory = new DirectoryInfo(bamSvcDirectoryPath.Or(defaultSvcScriptsSrcPath)).EnsureExists();
-            DirectoryInfo bamSvcBnDirectory = new DirectoryInfo(binPath).EnsureExists();
-            FileInfo[] files = bamSvcSrcDirectory.GetFiles($"*.{extension}", SearchOption.AllDirectories);
-            StringBuilder src = new StringBuilder();
-            foreach (FileInfo file in files)
-            {
-                src.AppendLine(file.ReadAllText());
-            }
-            string hash = src.ToString().Sha1();
-            string assemblyName = $"{hash}.dll";
-            Assembly bamSvcAssembly = null;
-            string svcAssemblyBinPath = Path.Combine(bamSvcBnDirectory.FullName, assemblyName);
-            if (!File.Exists(svcAssemblyBinPath))
-            {
-                bamSvcAssembly = files.ToAssembly(assemblyName);
-                FileInfo assemblyFile = bamSvcAssembly.GetFileInfo();
-                FileInfo targetPath = new FileInfo(svcAssemblyBinPath);
-                if (!targetPath.Directory.Exists)
-                {
-                    targetPath.Directory.Create();
-                }
-                File.Copy(assemblyFile.FullName, svcAssemblyBinPath);
-            }
-            else
-            {
-                bamSvcAssembly = Assembly.LoadFile(svcAssemblyBinPath);
-            }
-
-            return bamSvcAssembly;
-        }
-
-        private static void ServeRegistries(ILogger logger, string registries)
-        {
-            string contentRoot = GetArgument("ContentRoot", $"Enter the path to the content root (default: {defaultContentRoot}) ");
+            logger = logger ?? Log.Default;
             DataProvider dataSettings = DataProvider.Current;
             IApplicationNameProvider appNameProvider = DefaultConfigurationApplicationNameProvider.Instance;
             ServiceRegistryService serviceRegistryService = ServiceRegistryService.GetLocalServiceRegistryService(dataSettings, appNameProvider, GetArgument("AssemblySearchPattern", "Please specify the AssemblySearchPattern to use"), logger);
 
-            string[] requestedRegistries = registries.DelimitSplit(",");
-            HashSet<Type> serviceTypes = new HashSet<Type>();
-            ServiceRegistry allTypes = new ServiceRegistry();
-            foreach (string registryName in requestedRegistries)
-            {
-                ServiceRegistry registry = serviceRegistryService.GetServiceRegistry(registryName);
-                foreach (string className in registry.ClassNames)
-                {
-                    registry.Get(className, out Type type);
-                    if (type.HasCustomAttributeOfType<ProxyAttribute>())
-                    {
-                        serviceTypes.Add(type);
-                    }
-                }
-                allTypes.CombineWith(registry);
-            }
-            Type[] services = serviceTypes.ToArray();
-            if(services.Length == 0)
-            {
-                throw new ArgumentException("No services were loaded");
-            }
-
-            HostBinding[] hostPrefixes = ServiceConfig.GetConfiguredHostBindings();
-            ServeServiceTypes(contentRoot, hostPrefixes, allTypes, services);
-            hostPrefixes.Each(h => Message.PrintLine(h.ToString(), ConsoleColor.Blue));
-            Pause($"BamRpc server is serving services\r\n\t{services.ToArray().ToDelimited(s => s.FullName, "\r\n\t")}");
+            string[] requestedRegistries = registries.DelimitSplit(",");            
+            
+            ApiServiceInfo serviceInfo = BamApi.ServeRegistriesAsync(serviceRegistryService, requestedRegistries).Result;
+            
+            serviceInfo.HostBindings?.Each(h => Message.PrintLine(h.ToString(), ConsoleColor.Blue));
+            Pause($"BamApi server is serving services\r\n\t{serviceInfo.ServiceTypes?.ToDelimited(s => s.FullName, "\r\n\t")}");
         }
-
-        public static void ServeServiceTypes(string contentRoot, HostBinding[] prefixes, ServiceRegistry registry = null, params Type[] serviceTypes)
-        {
-            BamConf conf = BamConf.Load(contentRoot.Or(defaultContentRoot));
-            if(registry != null && ServiceRegistry.Default == null)
-            {
-                ServiceRegistry.Default = registry;
-            }
-            _bamApiServer = new BamApiServer(conf, GetLogger(), GetArgument("verbose", "Log responses to the console?").IsAffirmative())
-            {
-                HostBindings = new HashSet<HostBinding>(prefixes),
-                MonitorDirectories = new string[] { }                
-            };
-            serviceTypes.Each(t => _bamApiServer.ServiceTypes.Add(t));
-
-            _bamApiServer.Start();
-        }
-        
+                
         public static void StartBamApiServer(ConsoleLogger logger)
         {
             BamConf conf = BamConf.Load(DefaultConfiguration.GetAppSetting(contentRootConfigKey).Or(defaultContentRoot));
@@ -291,15 +222,20 @@ namespace Bam.Application
             _bamApiServer.Start();
         }
 
+        static ConsoleLogger consoleLogger;
         private static ConsoleLogger GetLogger()
         {
-            ConsoleLogger logger = new ConsoleLogger()
+            if (consoleLogger == null)
             {
-                AddDetails = false,
-                UseColors = true
-            };
-            logger.StartLoggingThread();
-            return logger;
+                ConsoleLogger logger = new ConsoleLogger()
+                {
+                    AddDetails = false,
+                    UseColors = true
+                };
+                logger.StartLoggingThread();
+                consoleLogger = logger;
+            }
+            return consoleLogger;
         }
 
         private Type GetServiceType(string className, out Assembly assembly)
@@ -316,13 +252,13 @@ namespace Bam.Application
             foreach (Assembly assembly in assemblies)
             {
                 type = GetType(assembly, className);
-                if(type != null)
+                if (type != null)
                 {
                     result = assembly;
                     break;
                 }
             }
-            if(result == null)
+            if (result == null)
             {
                 string assemblyPath = GetArgument("assemblyPath", true);
                 if (!File.Exists(assemblyPath))
@@ -331,7 +267,7 @@ namespace Bam.Application
                 }
 
                 if (File.Exists(assemblyPath))
-                { 
+                {
                     result = Assembly.LoadFrom(assemblyPath);
                     type = GetType(result, className);
                     if (type == null)
