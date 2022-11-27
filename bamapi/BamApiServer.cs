@@ -34,6 +34,7 @@ namespace Bam.Application
         public BamApiServer(BamConf conf, ILogger logger, bool verbose = false)
             : base(new BamApiResponder(conf, logger, verbose), logger)
         {
+            DependencyRegistry = BamApi.DependencyRegistry;
             Responder.Initialize();
             CreatedOrChangedHandler = (o, fsea) =>
             {
@@ -67,8 +68,47 @@ namespace Bam.Application
             base.Start();
         }
 
+        public HostBinding DefaultHostBinding
+        {
+            get => HostBindings.FirstOrDefault();
+        }
+
+        public BamApiServiceRegistry DependencyRegistry
+        {
+            get;
+            set;
+        }
+
         readonly object _serviceTypeLock = new object();
         public HashSet<Type> ServiceTypes { get; private set; }
+
+        /// <summary>
+        /// Set a single service of the specified generic type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void SetServiceType<T>()
+        {
+            SetServiceType(typeof(T));
+        }
+
+        /// <summary>
+        /// Set a single service of the specified type.
+        /// </summary>
+        /// <param name="serviceType"></param>
+        public void SetServiceType(Type serviceType)
+        {
+            SetServiceTypes(serviceType);
+        }
+
+        /// <summary>
+        /// Serve the specified types.
+        /// </summary>
+        /// <param name="serviceTypes"></param>
+        public void SetServiceTypes(params Type[] serviceTypes)
+        {
+            RegisterServiceTypes(serviceTypes);
+        }
+
         protected ServiceProxyResponder RegisterServiceTypes(IEnumerable<Type> serviceTypes)
         {
             lock (_serviceTypeLock)
@@ -78,6 +118,7 @@ namespace Bam.Application
             }
             return RegisterServiceTypes();
         }
+
         protected ServiceProxyResponder RegisterServiceTypes()
         {
             BamApiResponder api = Responder;
@@ -99,13 +140,14 @@ namespace Bam.Application
 
         private void AddCommonServices(ServiceProxyResponder responder)
         {
+            Assembly entryAssembly = Assembly.GetEntryAssembly();
             ServiceTypes.Each(new {  Logger, Responder = responder }, (ctx, serviceType) =>
             {
                 ctx.Responder.RemoveCommonService(serviceType);
-                ctx.Responder.AddCommonService(serviceType, ServiceRegistry.GetServiceLoader(serviceType));
+                ctx.Responder.AddCommonService(serviceType, ServiceRegistry.GetServiceLoader(serviceType, entryAssembly));
                 ctx.Logger.AddEntry("Added service: {0}", serviceType.FullName);
             });
-            IApiHmacKeyResolver apiKeyResolver = (IApiHmacKeyResolver)ServiceRegistry.GetServiceLoader(typeof(IApiHmacKeyResolver), new CoreClient())();
+            IApiHmacKeyResolver apiKeyResolver = DependencyRegistry.Get<IApiHmacKeyResolver>(new CoreClient());
             responder.CommonSecureChannel.ApiHmacKeyResolver = apiKeyResolver;
             responder.AppSecureChannels.Values.Each(sc => sc.ApiHmacKeyResolver = apiKeyResolver);
         }
@@ -161,7 +203,7 @@ namespace Bam.Application
                 {
                     DefaultConfiguration
                     .GetAppSetting("AssemblySearchPattern")
-                    .Or("*Services.dll,*Proxyables.dll,*Gloo.dll")
+                    .Or("*Services.dll,*Proxyables.dll")
                     .DelimitSplit(",", "|")
                     .Each(new { Directory = directory, ExcludeNamespaces = excludeNamespaces, ExcludeClasses = excludeClasses },
                     (ctx, searchPattern) =>

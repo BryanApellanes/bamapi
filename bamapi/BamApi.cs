@@ -48,13 +48,14 @@ namespace Bam.Application
             return _serviceRegistryServiceLock.DoubleCheckLock(ref _serviceRegistryService, () => ServiceRegistryService.GetLocalServiceRegistryService(DependencyRegistry));
         }
 
+
         /// <summary>
-        /// Creates a BamApiServer set to listen on the specified binding.  The default binding is for http://localhost:8080 if none is specified.
+        /// Create a BamApiServer that listens for requests to "localhost" on a random port from 8080 to 65535.
         /// </summary>
-        /// <returns></returns>
-        public static async Task<BamApiServer> CreateApiServer(HostBinding hostBinding = null)
+        /// <returns>BamApiServer</returns>
+        public static async Task<BamApiServer> CreateApiServerAsync(HostBinding hostBinding = null)
         {
-            hostBinding = hostBinding ?? new HostBinding();
+            hostBinding = hostBinding ?? new HostBinding(RandomNumber.Between(8079, 65535));
             return await CreateManagedServerAsync(() => new BamApiServer(new HostBinding()));
         }
 

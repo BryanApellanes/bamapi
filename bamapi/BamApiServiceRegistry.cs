@@ -22,7 +22,10 @@ namespace Bam.Application
             BamApiServiceRegistry bamApiServiceRegistry = new BamApiServiceRegistry();
             bamApiServiceRegistry.CombineWith(Configure(appRegistry =>
             {
+                ApiHmacKeyResolver hmacKeyResolver = new ApiHmacKeyResolver();
                 appRegistry
+                    .For<IApiHmacKeyProvider>().Use(hmacKeyResolver)
+                    .For<IApiHmacKeyResolver>().Use(hmacKeyResolver)
                     .For<IApplicationNameProvider>().Use(DefaultConfigurationApplicationNameProvider.Instance)
                     .For<DataProvider>().Use(DataProvider.Current)
                     .For<ApiConf>().Use(config)
