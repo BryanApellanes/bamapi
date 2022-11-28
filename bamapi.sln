@@ -13,6 +13,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "bam.net.shared", "submodule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.serviceproxy.core.tests", "submodule\Bam.Core\tests\bam.net.serviceproxy.core.tests\bam.net.serviceproxy.core.tests.csproj", "{69C2391B-6FF0-41F8-82D3-89C6628D58FE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.core.tests", "submodule\Bam.Core\tests\bam.net.core.tests\bam.net.core.tests.csproj", "{7CAB7308-FE88-4F52-9ADE-370D1F92174F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{E908520C-835A-4C5F-85C4-4AB70AB79CC6} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
 		{8F2CB78E-8C2E-45C6-97A0-C38F60A85E98} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
 		{69C2391B-6FF0-41F8-82D3-89C6628D58FE} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
+		{7CAB7308-FE88-4F52-9ADE-370D1F92174F} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D2DD47D6-04FA-4394-AE22-77E44B10EA32}
