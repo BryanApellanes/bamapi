@@ -1,5 +1,7 @@
 ﻿using Bam.Net.CommandLine;
+using Bam.Net.CoreServices;
 using Bam.Net.Encryption;
+using Bam.Net.Incubation;
 using Bam.Net.ServiceProxy;
 using Bam.Net.ServiceProxy.Data;
 using Bam.Net.ServiceProxy.Data.Dao.Repository;
@@ -422,6 +424,32 @@ namespace Bam.Net.Tests
             Expect.AreEqual(decrypted.ClassName, secureChannelRequestMessage.ClassName);
             Expect.AreEqual(decrypted.MethodName, secureChannelRequestMessage.MethodName);
             Expect.AreEqual(decrypted.JsonArgs, secureChannelRequestMessage.JsonArgs);
+        }
+
+        [UnitTest]
+        public void ValueTransformerPipelineFactoryTest()
+        {
+            ServiceRegistry testRegistry = new ServiceRegistry();
+            testRegistry.For<IAesKeySource>().Use<AesKeyVectorPair>();
+
+            ValueTransformerPipelineFactory factory = new ValueTransformerPipelineFactory(testRegistry);
+            ValueTransformerPipeline<TestMonkey> valueTransformerPipeline = factory.Create<TestMonkey>("aes");
+
+            string testName = "test_".RandomLetters(8);
+            TestMonkey testMonkey = new TestMonkey
+            {
+                Name = testName,
+                TailCount = RandomNumber.Between(1, 9),
+            };
+
+            string cipher = valueTransformerPipeline.Transform(testMonkey).ToBase64();
+
+            TestMonkey deciphered = valueTransformerPipeline.GetReverseTransformer().ReverseTransform(cipher.FromBase64());
+
+            Expect.AreEqual(testMonkey.Name, testName);
+            Expect.AreEqual(deciphered.Name, testName);
+            Expect.AreEqual(deciphered.TailCount, testMonkey.TailCount);
+            Expect.IsGreaterThan(deciphered.TailCount, 0);
         }
     }
 }
