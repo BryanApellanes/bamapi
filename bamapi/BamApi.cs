@@ -48,6 +48,10 @@ namespace Bam.Application
             return _serviceRegistryServiceLock.DoubleCheckLock(ref _serviceRegistryService, () => ServiceRegistryService.GetLocalServiceRegistryService(DependencyRegistry));
         }
 
+        public static async Task<BamApiServer> CreateApiServerAsync(int port)
+        {
+            return await CreateApiServerAsync(new HostBinding(port));
+        }
 
         /// <summary>
         /// Create a BamApiServer that listens for requests to "localhost" on a random port from 8080 to 65535.
@@ -55,7 +59,7 @@ namespace Bam.Application
         /// <returns>BamApiServer</returns>
         public static async Task<BamApiServer> CreateApiServerAsync(HostBinding hostBinding = null)
         {
-            hostBinding = hostBinding ?? new HostBinding(RandomNumber.Between(8079, 65535));
+            hostBinding = hostBinding ?? new HostBinding(RandomNumber.Between(8080, 65535));
             return await CreateManagedServerAsync(() => new BamApiServer(new HostBinding()));
         }
 

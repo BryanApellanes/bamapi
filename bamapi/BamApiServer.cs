@@ -27,13 +27,12 @@ namespace Bam.Application
             SetHostBindings(hostBindings);
         }
 
-        public BamApiServer(ILogger logger, bool verbose = false): this(new BamConf(), logger, verbose)
-        {
-        }
-
         public BamApiServer(BamConf conf, ILogger logger, bool verbose = false)
             : base(new BamApiResponder(conf, logger, verbose), logger)
         {
+            Type type = this.GetType();
+            ServerName = $"{type.Namespace}.{type.Name}_{Environment.MachineName}_{Guid.NewGuid()}";
+
             DependencyRegistry = BamApi.DependencyRegistry;
             Responder.Initialize();
             CreatedOrChangedHandler = (o, fsea) =>
@@ -68,9 +67,11 @@ namespace Bam.Application
             base.Start();
         }
 
+        public string ServerName { get; set; }
+
         public HostBinding DefaultHostBinding
         {
-            get => HostBindings.FirstOrDefault();
+            get => HostBindings.FirstOrDefault() ?? new ManagedServerHostBinding(this);
         }
 
         public BamApiServiceRegistry DependencyRegistry
@@ -132,7 +133,7 @@ namespace Bam.Application
         {
             if (hostBindings == null || hostBindings.Length == 0)
             {
-                hostBindings = new HostBinding[] { new HostBinding() };
+                hostBindings = new HostBinding[] { new ManagedServerHostBinding(this) };
             }
             HostBindings = new HashSet<HostBinding>(hostBindings);
             return hostBindings;

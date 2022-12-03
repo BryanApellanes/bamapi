@@ -24,6 +24,9 @@
     <Content Include="bamapi.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="NSubstitute" Version="4.4.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\submodule\Bam.Core\bam.core\bam.core.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -55,5 +55,22 @@ namespace Bam.Application.Test
             Thread.Sleep(300);
             bamServer.Stop();
         }
+
+        [UnitTest]
+        public void GetSameUnprivilegedPortForName()
+        {
+            int port = BamPlatform.GetUnprivilegedPortForName(nameof(GetSameUnprivilegedPortForName));
+            int check = BamPlatform.GetUnprivilegedPortForName(nameof(GetSameUnprivilegedPortForName));
+            Expect.AreEqual(port, check);
+            for (int i = 0; i < 2000; i++)
+            {
+                int checkAgain = BamPlatform.GetUnprivilegedPortForName(nameof(GetSameUnprivilegedPortForName));
+
+                Expect.AreEqual(port, checkAgain);
+                Expect.IsGreaterThanOrEqualTo(port, 1024);
+                Expect.IsLessThanOrEqualTo(port, 65535);
+            }
+            Message.PrintLine("Test Port = {0}", port);
+        }
     }
 }
