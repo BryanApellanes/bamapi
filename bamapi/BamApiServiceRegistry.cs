@@ -16,8 +16,20 @@ namespace Bam.Application
 {
     public class BamApiServiceRegistry : ApplicationServiceRegistry
     {
+        public static BamApiServiceRegistry Create(BamApiOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            BamApiServiceRegistry bamApiServiceRegistry = ForConfiguration(options.ApiConf);
+            options.ConfigureDependencies(bamApiServiceRegistry);
+            return bamApiServiceRegistry;
+        }
+
         [ServiceRegistryLoader]
-        public static BamApiServiceRegistry ForConfiguration(ApiConf config, ILogger logger = null)
+        public static BamApiServiceRegistry ForConfiguration(ApiConf config)
         {
             BamApiServiceRegistry bamApiServiceRegistry = new BamApiServiceRegistry();
             bamApiServiceRegistry.CombineWith(Configure(appRegistry =>

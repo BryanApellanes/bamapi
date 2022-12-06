@@ -40,5 +40,53 @@ namespace Bam.Application.Test
             Thread.Sleep(300);
             apiServer.Stop();
         }
+
+        [UnitTest]
+        public async Task CreateContext()
+        {
+            BamApiContext bamApiContext = await BamApi.StartAsync(new BamApiOptions { ServiceTypes = new HashSet<Type> { typeof(Echo) } });
+
+            HashSet<Type> types = new HashSet<Type>(bamApiContext.ServiceTypes);
+            types.Contains(typeof(Echo)).ShouldBeTrue();
+        }
+
+        [UnitTest]
+        public async Task ServeEncryptedType()
+        {
+            BamApiContext bamApiContext = await BamApi.StartAsync(new BamApiOptions { ServiceTypes = new HashSet<Type> { typeof(EncryptedEcho) } });
+
+            EncryptedEcho encryptedEcho = await BamApi.GetProxyAsync<EncryptedEcho>(bamApiContext.DefaultHostBinding);
+            string testStringValue = 8.RandomLetters();
+            string response = encryptedEcho.Send(testStringValue);
+
+            response.ShouldBeEqualTo(testStringValue);
+            Thread.Sleep(300);
+            bamApiContext.Stop();
+        }
+
+        [UnitTest]
+        public async Task ServeConfiguredEncryptedType()
+        {
+            BamApiContext bamApiContext = await BamApi.StartAsync(new BamApiOptions()
+            {
+                ServerName = $"{nameof(ServeConfiguredEncryptedType)}_test",
+                ConfigureDependencies = (svcReg) =>
+                {
+
+                },
+                ConfigureServices = (svcReg) =>
+                {
+                    return new Type[] { typeof(EncryptedEcho) };
+                }
+            });
+
+            EncryptedEcho echoProxy = await BamApi.GetProxyAsync<EncryptedEcho>(bamApiContext.DefaultHostBinding);
+            string testStringValue = 8.RandomLetters();
+            string response = echoProxy.Send(testStringValue);
+
+            response.ShouldBeEqualTo(testStringValue);
+            Thread.Sleep(300);
+            bamApiContext.Stop();
+        }
     }
 }

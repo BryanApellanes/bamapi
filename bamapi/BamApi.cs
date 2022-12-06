@@ -48,27 +48,34 @@ namespace Bam.Application
             return _serviceRegistryServiceLock.DoubleCheckLock(ref _serviceRegistryService, () => ServiceRegistryService.GetLocalServiceRegistryService(DependencyRegistry));
         }
 
-        public static async Task<BamApiServer> CreateApiServerAsync(int port)
-        {
-            return await CreateApiServerAsync(new HostBinding(port));
-        }
-
         /// <summary>
         /// Create a BamApiServer that listens for requests to "localhost" on a random port from 8080 to 65535.
         /// </summary>
         /// <returns>BamApiServer</returns>
-        public static async Task<BamApiServer> CreateApiServerAsync(HostBinding hostBinding = null)
+        public static async Task<BamApiServer> CreateApiServerAsync(params HostBinding[] hostBindings)
         {
-            hostBinding = hostBinding ?? new HostBinding(RandomNumber.Between(8080, 65535));
-            return await CreateManagedServerAsync(() => new BamApiServer(new HostBinding()));
+            hostBindings = hostBindings ?? new HostBinding[] { new HostBinding(RandomNumber.Between(8080, 65535)) };
+            return await CreateManagedServerAsync(() => new BamApiServer(hostBindings));
         }
 
+        /// <summary>
+        /// Get a proxy instance using locally available
+        /// assemblies.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance that is returned.</typeparam>
+        /// <returns>A proxy instance of T.</returns>
         public static async Task<T> GetProxyAsync<T>()
         {
             ProxyFactory factory = new ProxyFactory();
             return await Task.Run(() => factory.GetProxy<T>());
         }
 
+        /// <summary>
+        /// Get a proxy instance; if not already done, the assembly is acquired by downloading and compiling the source from the specified host. 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="hostBinding"></param>
+        /// <returns></returns>
         public static async Task<T> GetProxyAsync<T>(HostBinding hostBinding)
         {
             return await GetProxyAsync<T>(hostBinding.HostName, hostBinding.Port, Log.Default);
@@ -80,20 +87,27 @@ namespace Bam.Application
             return await Task.Run(() => factory.GetProxy<T>(hostName, port, logger));
         }
 
-        public static async Task<ApiServiceInfo> ServeRegistries(params string[] registryNames)
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(params string[] registryNames)
         {
-            return await ServeRegistriesAsync(GetLocalServiceRegistryService, registryNames);
+            return await CreateApiServiceContextAsync(GetLocalServiceRegistryService, registryNames);
         }
 
-        public static async Task<ApiServiceInfo> ServeRegistriesAsync(Func<ServiceRegistryService> serviceRegistryServiceProvider, params string[] registryNames)
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(Func<ServiceRegistryService> serviceRegistryServiceProvider, params string[] registryNames)
         {
-            return await ServeRegistriesAsync(serviceRegistryServiceProvider(), registryNames);
+            return await CreateApiServiceContextAsync(serviceRegistryServiceProvider(), registryNames);
         }
 
-        public static async Task<ApiServiceInfo> ServeRegistriesAsync(ServiceRegistryService serviceRegistryService, string[] registryNames)
+        /// <summary>
+        /// Serve the specified registry names from the specified ServiceRegistryService.
+        /// </summary>
+        /// <param name="serviceRegistryService"></param>
+        /// <param name="registryNames"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(ServiceRegistryService serviceRegistryService, string[] registryNames)
         {
             HashSet<Type> serviceTypes = new HashSet<Type>();
-            ServiceRegistry dependencyRegistry = new ServiceRegistry();
+            ApplicationServiceRegistry dependencyRegistry = ApplicationServiceRegistry.ForProcess();
             foreach (string registryName in registryNames)
             {
                 ServiceRegistry registry = serviceRegistryService.GetServiceRegistry(registryName);
@@ -114,42 +128,70 @@ namespace Bam.Application
             }
 
             HostBinding[] hostBindings = ServiceConfig.GetConfiguredHostBindings();
-            return await ServeServiceTypesAsync(hostBindings, dependencyRegistry, services);
+            return await CreateApiServiceContextAsync(hostBindings, dependencyRegistry, services);
         }
 
-        public static async Task<ApiServiceInfo> ServeServiceTypesAsync(params Type[] serviceTypes)
+        public static async Task<BamApiContext> StartAsync(BamApiOptions options)
         {
-            return await ServeServiceTypesAsync(new HostBinding[] { new HostBinding()}, serviceTypes);
+            BamApiServiceRegistry bamApiServiceRegistry = BamApiServiceRegistry.Create(options);
+            object[] services = options.ConfigureServices(bamApiServiceRegistry);
+            services.Each(svc => bamApiServiceRegistry.Set(svc.GetType(), svc));
+            BamApiServiceContext bamApiServiceContext = await CreateApiServiceContextAsync(options.HostBindings, bamApiServiceRegistry, options.ServiceTypes.ToArray());
+            BamApiContext bamApiContext =  new BamApiContext(bamApiServiceContext);
+            bamApiContext.Start();
+            return bamApiContext;
         }
 
-        public static async Task<ApiServiceInfo> ServeServiceTypesAsync(HostBinding[] hostBindings, params Type[] serviceTypes)
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(string serverName, Func<ApplicationServiceRegistry, ApplicationServiceRegistry> configureDependencyRegistry, params Type[] serviceTypes)
         {
-            return await ServeServiceTypesAsync(hostBindings, null, serviceTypes);
+            return await CreateApiServiceContextAsync
+            (
+                serverName, 
+                configureDependencyRegistry, 
+                new ApiConf(), 
+                serviceTypes
+            );
         }
 
-        public static async Task<ApiServiceInfo> ServeServiceTypesAsync(HostBinding[] hostBindings, ServiceRegistry dependencyRegistry, params Type[] serviceTypes)
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(string serverName, Func<ApplicationServiceRegistry, ApplicationServiceRegistry> configureDepencyRegistry, ApiConf apiConf, params Type[] serviceTypes)
+        {
+            return await CreateApiServiceContextAsync
+            (
+                new HostBinding[] { new ManagedServerHostBinding(serverName) },
+                configureDepencyRegistry(BamApiServiceRegistry.ForConfiguration(apiConf)), 
+                serviceTypes
+            );
+        }
+
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(HostBinding[] hostBindings, params Type[] serviceTypes)
+        {
+            return await CreateApiServiceContextAsync(hostBindings, null, serviceTypes);
+        }
+
+        public static async Task<BamApiServiceContext> CreateApiServiceContextAsync(HostBinding[] hostBindings, ApplicationServiceRegistry dependencyRegistry, params Type[] serviceTypes)
         {
             BamConf conf = BamConf.Load(BamHome.ContentPath);
             if (dependencyRegistry != null && ServiceRegistry.Default == null)
             {
                 ServiceRegistry.Default = dependencyRegistry;
             }
-            BamApiServer apiServer = await CreateManagedServerAsync<BamApiServer>(() => new BamApiServer(conf, Log.Default, ApiConf.Verbose)
+            BamApiServer apiServer = await CreateManagedServerAsync(() => new BamApiServer(conf, Log.Default, ApiConf.Verbose)
             {
+                DependencyRegistry = dependencyRegistry,
                 HostBindings = new HashSet<HostBinding>(hostBindings),
                 MonitorDirectories = new string[] { }
             });
+            serviceTypes.Each(svc => apiServer.ServiceTypes.Add(svc));
 
-            serviceTypes.Each(type=> apiServer.ServiceTypes.Add(type));
-            apiServer.Start();
-            return new ApiServiceInfo
+            BamApiServiceContext bamApiServiceContext = new BamApiServiceContext
             {
                 Server = apiServer,
-                DependencyRegistry = dependencyRegistry,
                 ServiceTypes = serviceTypes,
                 HostBindings = hostBindings,
                 ApiConf = ApiConf
             };
+
+            return bamApiServiceContext;
         }
 
         public static Task<Assembly> CompileBamApiServiceSource(string bamSvcDirectoryPath, string extension)

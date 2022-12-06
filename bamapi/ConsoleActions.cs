@@ -72,7 +72,7 @@ namespace Bam.Application
                     }
                 }
 
-                BamApi.ServeServiceTypesAsync(binding, serviceType);
+                BamApi.CreateApiServiceContextAsync(binding, serviceType);
                 Pause($"BamApi server is serving service {serviceClassName}");
             }
             catch (Exception ex)
@@ -187,7 +187,7 @@ namespace Bam.Application
 
             HostBinding[] hostBindings = ServiceConfig.GetConfiguredHostBindings();
             Type[] serviceTypes = bamApiAssembly.GetTypes().Where(t => t.HasCustomAttributeOfType<ProxyAttribute>()).ToArray();
-            BamApi.ServeServiceTypesAsync(hostBindings, serviceTypes);
+            BamApi.CreateApiServiceContextAsync(hostBindings, serviceTypes);
 
             Pause($"BamApi server is serving cs types: {string.Join(", ", serviceTypes.Select(t => t.Name).ToArray())}");
         }
@@ -201,7 +201,7 @@ namespace Bam.Application
 
             string[] requestedRegistries = registries.DelimitSplit(",");            
             
-            ApiServiceInfo serviceInfo = BamApi.ServeRegistriesAsync(serviceRegistryService, requestedRegistries).Result;
+            BamApiServiceContext serviceInfo = BamApi.CreateApiServiceContextAsync(serviceRegistryService, requestedRegistries).Result;
             
             serviceInfo.HostBindings?.Each(h => Message.PrintLine(h.ToString(), ConsoleColor.Blue));
             Pause($"BamApi server is serving services\r\n\t{serviceInfo.ServiceTypes?.ToDelimited(s => s.FullName, "\r\n\t")}");

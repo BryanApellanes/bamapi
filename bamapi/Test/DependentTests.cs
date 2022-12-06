@@ -20,7 +20,7 @@ namespace Bam.Application.Test
             mockServer.ServerName.Returns(testServerName);
             ManagedServerHostBinding serverHostBinding1 = new ManagedServerHostBinding(mockServer);
             ManagedServerHostBinding serverHostBinding2 = new ManagedServerHostBinding(testServerName);
-
+            
             Expect.AreEqual(testServerName, serverHostBinding1.ServerName);
             Expect.AreEqual(testServerName, serverHostBinding2.ServerName);
             Expect.AreEqual(serverHostBinding1.Port, serverHostBinding2.Port);

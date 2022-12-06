@@ -22,18 +22,12 @@ namespace Bam.Application
             SetHostBindings(hostBindings);
         }
 
-        public BamApiServer(bool verbose, params HostBinding[] hostBindings) : this(new BamConf(), Log.Default, verbose)
-        { 
-            SetHostBindings(hostBindings);
-        }
-
         public BamApiServer(BamConf conf, ILogger logger, bool verbose = false)
             : base(new BamApiResponder(conf, logger, verbose), logger)
         {
             Type type = this.GetType();
             ServerName = $"{type.Namespace}.{type.Name}_{Environment.MachineName}_{Guid.NewGuid()}";
 
-            DependencyRegistry = BamApi.DependencyRegistry;
             Responder.Initialize();
             CreatedOrChangedHandler = (o, fsea) =>
             {
@@ -74,10 +68,18 @@ namespace Bam.Application
             get => HostBindings.FirstOrDefault() ?? new ManagedServerHostBinding(this);
         }
 
-        public BamApiServiceRegistry DependencyRegistry
+        ApplicationServiceRegistry _dependencyRegistry;
+        public ApplicationServiceRegistry DependencyRegistry
         {
-            get;
-            set;
+            get
+            {
+                return _dependencyRegistry;
+            }
+            set
+            {
+                this._dependencyRegistry = BamApi.DependencyRegistry;
+                this.Responder.ServiceProxyResponder.DependencyInjectionServiceRegistry = DependencyRegistry;
+            }
         }
 
         readonly object _serviceTypeLock = new object();
