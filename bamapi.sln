@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodule", "submodule", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.core", "submodule\Bam.Core\bam.core\bam.core.csproj", "{E908520C-835A-4C5F-85C4-4AB70AB79CC6}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "bam.net.shared", "submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.shproj", "{8F2CB78E-8C2E-45C6-97A0-C38F60A85E98}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "bam.net.shared", "submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.shproj", "{22DA9F9E-A84F-47EE-A870-3CC845812606}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.serviceproxy.core.tests", "submodule\Bam.Core\tests\bam.net.serviceproxy.core.tests\bam.net.serviceproxy.core.tests.csproj", "{69C2391B-6FF0-41F8-82D3-89C6628D58FE}"
 EndProject
@@ -43,7 +43,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E908520C-835A-4C5F-85C4-4AB70AB79CC6} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
-		{8F2CB78E-8C2E-45C6-97A0-C38F60A85E98} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
+		{22DA9F9E-A84F-47EE-A870-3CC845812606} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
 		{69C2391B-6FF0-41F8-82D3-89C6628D58FE} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
 		{7CAB7308-FE88-4F52-9ADE-370D1F92174F} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
 	EndGlobalSection
@@ -51,8 +51,8 @@ Global
 		SolutionGuid = {D2DD47D6-04FA-4394-AE22-77E44B10EA32}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.projitems*{22da9f9e-a84f-47ee-a870-3cc845812606}*SharedItemsImports = 13
 		submodule\Bam.Core\tests\shared\bam.net.tests.shared\bam.net.tests.shared.projitems*{69c2391b-6ff0-41f8-82d3-89c6628d58fe}*SharedItemsImports = 5
-		submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.projitems*{8f2cb78e-8c2e-45c6-97a0-c38f60a85e98}*SharedItemsImports = 13
 		submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.projitems*{e908520c-835a-4c5f-85c4-4ab70ab79cc6}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

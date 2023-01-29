@@ -28,7 +28,7 @@ namespace Bam.Application.Test
             
             Message.PrintLine($"{nameof(ServeUnencryptedService)}::{bamServer.DefaultHostBinding}");
 
-            Echo echoProxy = await BamApi.GetProxyAsync<Echo>(bamServer.DefaultHostBinding);
+            Echo echoProxy = await BamApi.GetClientAsync<Echo>(bamServer.DefaultHostBinding);
             string testStringValue = 8.RandomLetters();
             string response = echoProxy.Send(testStringValue);
 
@@ -47,7 +47,7 @@ namespace Bam.Application.Test
 
             Message.PrintLine($"{nameof(ServeEncryptedService)}::{bamServer.DefaultHostBinding}");
 
-            EncryptedEcho echoProxy = await BamApi.GetProxyAsync<EncryptedEcho>(bamServer.DefaultHostBinding);
+            EncryptedEcho echoProxy = await BamApi.GetClientAsync<EncryptedEcho>(bamServer.DefaultHostBinding);
             string testStringValue = 8.RandomLetters();
             string response = echoProxy.Send(testStringValue);
 

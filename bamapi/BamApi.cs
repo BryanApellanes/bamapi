@@ -64,7 +64,7 @@ namespace Bam.Application
         /// </summary>
         /// <typeparam name="T">The type of the instance that is returned.</typeparam>
         /// <returns>A proxy instance of T.</returns>
-        public static async Task<T> GetProxyAsync<T>()
+        public static async Task<T> GetClientAsync<T>()
         {
             ProxyFactory factory = new ProxyFactory();
             return await Task.Run(() => factory.GetProxy<T>());
@@ -76,12 +76,12 @@ namespace Bam.Application
         /// <typeparam name="T"></typeparam>
         /// <param name="hostBinding"></param>
         /// <returns></returns>
-        public static async Task<T> GetProxyAsync<T>(HostBinding hostBinding)
+        public static async Task<T> GetClientAsync<T>(HostBinding hostBinding)
         {
-            return await GetProxyAsync<T>(hostBinding.HostName, hostBinding.Port, Log.Default);
+            return await GetClientAsync<T>(hostBinding.HostName, hostBinding.Port, Log.Default);
         }
 
-        public static async Task<T> GetProxyAsync<T>(string hostName, int port = 80, ILogger logger = null)
+        public static async Task<T> GetClientAsync<T>(string hostName, int port = 80, ILogger logger = null)
         {
             ProxyFactory factory = new ProxyFactory();
             return await Task.Run(() => factory.GetProxy<T>(hostName, port, logger));

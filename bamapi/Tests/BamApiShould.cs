@@ -19,10 +19,6 @@ namespace Bam.Application.Test
         // TODO: write tests for the following
 
         // Execute unencrypted
-        // Execute encrypted
-        // Validate method attributes
-        // Validate Hmac signature
-        // Authorize bam://org:app:user
         [UnitTest("BamApi.CreateApiServerAsync should create BamApiServer that responds to BamApi proxy GET.")]
         public async Task ServeType()
         {
@@ -32,7 +28,7 @@ namespace Bam.Application.Test
 
             Message.PrintLine(apiServer.DefaultHostBinding.ToString());
 
-            Echo echoProxy = await BamApi.GetProxyAsync<Echo>(apiServer.DefaultHostBinding);
+            Echo echoProxy = await BamApi.GetClientAsync<Echo>(apiServer.DefaultHostBinding);
             string testStringValue = 8.RandomLetters();
             string response = echoProxy.Send(testStringValue);
 
@@ -50,12 +46,13 @@ namespace Bam.Application.Test
             types.Contains(typeof(Echo)).ShouldBeTrue();
         }
 
+        // Execute encrypted
         [UnitTest]
         public async Task ServeEncryptedType()
         {
             BamApiContext bamApiContext = await BamApi.StartAsync(new BamApiOptions { ServiceTypes = new HashSet<Type> { typeof(EncryptedEcho) } });
 
-            EncryptedEcho encryptedEcho = await BamApi.GetProxyAsync<EncryptedEcho>(bamApiContext.DefaultHostBinding);
+            EncryptedEcho encryptedEcho = await BamApi.GetClientAsync<EncryptedEcho>(bamApiContext.DefaultHostBinding);
             string testStringValue = 8.RandomLetters();
             string response = encryptedEcho.Send(testStringValue);
 
@@ -80,7 +77,7 @@ namespace Bam.Application.Test
                 }
             });
 
-            EncryptedEcho echoProxy = await BamApi.GetProxyAsync<EncryptedEcho>(bamApiContext.DefaultHostBinding);
+            EncryptedEcho echoProxy = await BamApi.GetClientAsync<EncryptedEcho>(bamApiContext.DefaultHostBinding);
             string testStringValue = 8.RandomLetters();
             string response = echoProxy.Send(testStringValue);
 
@@ -88,5 +85,9 @@ namespace Bam.Application.Test
             Thread.Sleep(300);
             bamApiContext.Stop();
         }
+
+        // Validate method attributes
+        // Validate Hmac signature
+        // Authorize bam://org:app:user
     }
 }
