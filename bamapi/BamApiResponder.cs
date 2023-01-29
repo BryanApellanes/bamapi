@@ -1,3 +1,4 @@
+using Bam.Net;
 using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.Server.JsonRpc;
@@ -6,18 +7,22 @@ using Bam.Net.ServiceProxy;
 using System;
 using System.Collections.Generic;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     public class BamApiResponder : HttpHeaderResponder, IInitialize<BamApiResponder>
     {
-        readonly Dictionary<string, IResponder> _responders;
+        readonly Dictionary<string, IHttpResponder> _responders;
+
+        public BamApiResponder() : base(new BamConf(), Log.Default)
+        { }
+
         public BamApiResponder(BamConf conf, ILogger logger, bool verbose = false)
             : base(conf, logger)
         {
             RendererFactory = new WebRendererFactory(logger);
             ServiceProxyResponder = new ServiceProxyResponder(conf, logger);
             RpcResponder = new JsonRpcResponder(conf, logger);
-            _responders = new Dictionary<string, IResponder>
+            _responders = new Dictionary<string, IHttpResponder>
             {
                 { ServiceProxyResponder.Name, ServiceProxyResponder },
                 { RpcResponder.Name, RpcResponder }
@@ -50,7 +55,7 @@ namespace Bam.Net.Application
         {
             if (!TryRespond(context))
             {
-                SendResponse(context, new HttpStatusCodeHandler { Code = 404, DefaultResponse = "Not Found" }, new { BamServer = "Bam Rpc Server" } );
+                SendResponse(context, new HttpStatusCodeHandler { Code = 404, DefaultResponse = "Not Found" }, new { BamServer = "Bam Api Server" } );
             }
             context.Response.Close();
             return true;
@@ -58,10 +63,10 @@ namespace Bam.Net.Application
 
         public override bool TryRespond(IHttpContext context)
         {
-            return TryRespond(context, out IResponder responder);
+            return TryRespond(context, out IHttpResponder _);
         }
 
-        public bool TryRespond(IHttpContext context, out IResponder responder)
+        public bool TryRespond(IHttpContext context, out IHttpResponder responder)
         {
             try
             {

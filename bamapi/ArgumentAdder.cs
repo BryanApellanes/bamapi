@@ -1,6 +1,6 @@
 ﻿using Bam.Net.CommandLine;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
     internal class ArgumentAdder: CommandLineInterface
     {
@@ -21,6 +21,7 @@ namespace Bam.Net.Application
             AddValidArgument("nameSpace", false, false, "When generating client proxies, the namespace the type is in");
             AddValidArgument("typeName", false, false, "When generating client proxies, the name of the type");
             AddValidArgument("output", false, false, "When generating client proxies, the directory path to write to");
+            AddValidArgument("port", false, false, "The port to listen on, default is 9100");
         }
     }
 }

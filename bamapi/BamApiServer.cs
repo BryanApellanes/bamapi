@@ -2,7 +2,7 @@ using Bam.Net.Configuration;
 using Bam.Net.CoreServices;
 using Bam.Net.Logging;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,14 +10,24 @@ using System.Linq;
 using System.Reflection;
 using System.Timers;
 using Bam.Net.Services.Clients;
+using Bam.Net.Services;
+using Bam.Net;
 
-namespace Bam.Net.Application
+namespace Bam.Application
 {
-    public class BamApiServer: SimpleServer<BamApiResponder>
+    public class BamApiServer : SimpleServer<BamApiResponder>, IManagedServer
     {
+        public BamApiServer(params HostBinding[] hostBindings): this(new BamConf(), Log.Default, false)
+        {
+            SetHostBindings(hostBindings);
+        }
+
         public BamApiServer(BamConf conf, ILogger logger, bool verbose = false)
             : base(new BamApiResponder(conf, logger, verbose), logger)
         {
+            Type type = this.GetType();
+            ServerName = $"{type.Namespace}.{type.Name}_{Environment.MachineName}_{Guid.NewGuid()}";
+
             Responder.Initialize();
             CreatedOrChangedHandler = (o, fsea) =>
             {
@@ -36,7 +46,7 @@ namespace Bam.Net.Application
         
         public override void Start()
         {
-            if(MonitorDirectories.Length > 0)
+            if (MonitorDirectories.Length > 0)
             {
                 ServiceTypes.Clear();
                 MonitorDirectories.Each(new { Server = this }, (ctx, dir) =>
@@ -51,8 +61,57 @@ namespace Bam.Net.Application
             base.Start();
         }
 
+        public string ServerName { get; set; }
+
+        public HostBinding DefaultHostBinding
+        {
+            get => HostBindings.FirstOrDefault() ?? new ManagedServerHostBinding(this);
+        }
+
+        ApplicationServiceRegistry _dependencyRegistry;
+        public ApplicationServiceRegistry DependencyRegistry
+        {
+            get
+            {
+                return _dependencyRegistry;
+            }
+            set
+            {
+                this._dependencyRegistry = BamApi.DependencyRegistry;
+                this.Responder.ServiceProxyResponder.DependencyInjectionServiceRegistry = DependencyRegistry;
+            }
+        }
+
         readonly object _serviceTypeLock = new object();
         public HashSet<Type> ServiceTypes { get; private set; }
+
+        /// <summary>
+        /// Set a single service of the specified generic type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void SetServiceType<T>()
+        {
+            SetServiceType(typeof(T));
+        }
+
+        /// <summary>
+        /// Set a single service of the specified type.
+        /// </summary>
+        /// <param name="serviceType"></param>
+        public void SetServiceType(Type serviceType)
+        {
+            SetServiceTypes(serviceType);
+        }
+
+        /// <summary>
+        /// Serve the specified types.
+        /// </summary>
+        /// <param name="serviceTypes"></param>
+        public void SetServiceTypes(params Type[] serviceTypes)
+        {
+            RegisterServiceTypes(serviceTypes);
+        }
+
         protected ServiceProxyResponder RegisterServiceTypes(IEnumerable<Type> serviceTypes)
         {
             lock (_serviceTypeLock)
@@ -62,6 +121,7 @@ namespace Bam.Net.Application
             }
             return RegisterServiceTypes();
         }
+
         protected ServiceProxyResponder RegisterServiceTypes()
         {
             BamApiResponder api = Responder;
@@ -71,23 +131,34 @@ namespace Bam.Net.Application
             return responder;
         }
 
+        private HostBinding[] SetHostBindings(HostBinding[] hostBindings)
+        {
+            if (hostBindings == null || hostBindings.Length == 0)
+            {
+                hostBindings = new HostBinding[] { new ManagedServerHostBinding(this) };
+            }
+            HostBindings = new HashSet<HostBinding>(hostBindings);
+            return hostBindings;
+        }
+
         private void AddCommonServices(ServiceProxyResponder responder)
         {
+            Assembly entryAssembly = Assembly.GetEntryAssembly();
             ServiceTypes.Each(new {  Logger, Responder = responder }, (ctx, serviceType) =>
             {
                 ctx.Responder.RemoveCommonService(serviceType);
-                ctx.Responder.AddCommonService(serviceType, ServiceRegistry.GetServiceLoader(serviceType));
+                ctx.Responder.AddCommonService(serviceType, ServiceRegistry.GetServiceLoader(serviceType, entryAssembly));
                 ctx.Logger.AddEntry("Added service: {0}", serviceType.FullName);
             });
-            IApiKeyResolver apiKeyResolver = (IApiKeyResolver)ServiceRegistry.GetServiceLoader(typeof(IApiKeyResolver), new CoreClient())();
-            responder.CommonSecureChannel.ApiKeyResolver = apiKeyResolver;
-            responder.AppSecureChannels.Values.Each(sc => sc.ApiKeyResolver = apiKeyResolver);
+            IApiHmacKeyResolver apiKeyResolver = DependencyRegistry.Get<IApiHmacKeyResolver>(new CoreClient());
+            responder.CommonSecureChannel.ApiHmacKeyResolver = apiKeyResolver;
+            responder.AppSecureChannels.Values.Each(sc => sc.ApiHmacKeyResolver = apiKeyResolver);
         }
 
         Timer reloadDelay;
         private void ReloadServices(FileSystemEventArgs fsea)
         {
-            if(reloadDelay != null)
+            if (reloadDelay != null)
             {
                 reloadDelay.Stop();
                 reloadDelay.Dispose();
@@ -135,7 +206,7 @@ namespace Bam.Net.Application
                 {
                     DefaultConfiguration
                     .GetAppSetting("AssemblySearchPattern")
-                    .Or("*Services.dll,*Proxyables.dll,*Gloo.dll")
+                    .Or("*Services.dll,*Proxyables.dll")
                     .DelimitSplit(",", "|")
                     .Each(new { Directory = directory, ExcludeNamespaces = excludeNamespaces, ExcludeClasses = excludeClasses },
                     (ctx, searchPattern) =>

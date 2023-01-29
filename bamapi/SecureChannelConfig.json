@@ -1,6 +1,6 @@
 {
   "SchemaInitializer": {
-    "SchemaContext": "Bam.Net.ServiceProxy.Secure.SecureServiceProxyContext, bam.net.core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "SchemaContext": "Bam.Net.ServiceProxy.Encryption.SecureServiceProxyContext, bam.net.core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
     "RegistrarCaller": "Bam.Net.Data.SQLiteRegistrarCaller, bam.net.core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
     "SchemaAssemblyPath": null
   }

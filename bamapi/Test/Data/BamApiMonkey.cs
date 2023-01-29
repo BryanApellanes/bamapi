@@ -1,15 +1,16 @@
+using Bam.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bam.Net.Application
+namespace Bam.Application.Test.Data
 {
-    public class BamRpcMonkey
+    public class BamApiMonkey
     {
-        public BamRpcMonkey() { }
-        public BamRpcMonkey(string name)
+        public BamApiMonkey() { }
+        public BamApiMonkey(string name)
         {
             Name = name;
             Birthday = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365 * RandomNumber.Between(10, 150)));
