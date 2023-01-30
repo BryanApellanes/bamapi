@@ -1,0 +1,6 @@
+[submodule "submodules/bam.core"]
+	path = submodules/bam.core
+	url = git@github.com:BryanApellanes/Bam.Core.git
+[submodule "submodules/bamtest"]
+	path = submodules/bamtest
+	url = git@github.com:BryanApellanes/bamtest.git
