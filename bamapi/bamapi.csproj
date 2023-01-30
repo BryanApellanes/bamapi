@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ApplicationIcon>bamapi.ico</ApplicationIcon>
     <RootNamespace>Bam.Application</RootNamespace>
     <PackageId>bamapi.exe</PackageId>
@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\submodules\bam.core\bam.core\bam.core.csproj" />
+    <ProjectReference Include="..\submodules\bam.core\bam.test\bam.test.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Test\GlooTestScript.csgloo">
