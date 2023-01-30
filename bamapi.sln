@@ -5,15 +5,17 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bamapi", "bamapi\bamapi.csproj", "{C8C238D9-FD36-4D23-A7E4-77DF9EECCA1B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodule", "submodule", "{C64E94A6-00A6-4B45-8117-498F5E17125A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{CFFA42A9-BE2A-4407-9A93-6282901A27D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.core", "submodule\Bam.Core\bam.core\bam.core.csproj", "{E908520C-835A-4C5F-85C4-4AB70AB79CC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.core", "submodules\bam.core\bam.core\bam.core.csproj", "{C53FD9F4-E2F0-4E88-A4DB-478053389BA2}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "bam.net.shared", "submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.shproj", "{22DA9F9E-A84F-47EE-A870-3CC845812606}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "bam.net.shared", "submodules\bam.core\submodules\bam.net.shared\bam.net.shared.shproj", "{57AF67DE-0817-4326-AE67-A82F53E49197}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.serviceproxy.core.tests", "submodule\Bam.Core\tests\bam.net.serviceproxy.core.tests\bam.net.serviceproxy.core.tests.csproj", "{69C2391B-6FF0-41F8-82D3-89C6628D58FE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_core", "_core", "{054F198C-4E9F-4D8A-BC6A-EB11D858732C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.core.tests", "submodule\Bam.Core\tests\bam.net.core.tests\bam.net.core.tests.csproj", "{7CAB7308-FE88-4F52-9ADE-370D1F92174F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.core.tests", "submodules\bam.core\tests\bam.net.core.tests\bam.net.core.tests.csproj", "{9307DE2F-17A5-48D2-B14C-023DB6535F5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bam.net.serviceproxy.core.tests", "submodules\bam.core\tests\bam.net.serviceproxy.core.tests\bam.net.serviceproxy.core.tests.csproj", "{E9C5306D-0F83-465D-B22E-8819D18CFDC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,34 +27,35 @@ Global
 		{C8C238D9-FD36-4D23-A7E4-77DF9EECCA1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8C238D9-FD36-4D23-A7E4-77DF9EECCA1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8C238D9-FD36-4D23-A7E4-77DF9EECCA1B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E908520C-835A-4C5F-85C4-4AB70AB79CC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E908520C-835A-4C5F-85C4-4AB70AB79CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E908520C-835A-4C5F-85C4-4AB70AB79CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E908520C-835A-4C5F-85C4-4AB70AB79CC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69C2391B-6FF0-41F8-82D3-89C6628D58FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7CAB7308-FE88-4F52-9ADE-370D1F92174F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C53FD9F4-E2F0-4E88-A4DB-478053389BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C53FD9F4-E2F0-4E88-A4DB-478053389BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C53FD9F4-E2F0-4E88-A4DB-478053389BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C53FD9F4-E2F0-4E88-A4DB-478053389BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9307DE2F-17A5-48D2-B14C-023DB6535F5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9307DE2F-17A5-48D2-B14C-023DB6535F5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9307DE2F-17A5-48D2-B14C-023DB6535F5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9307DE2F-17A5-48D2-B14C-023DB6535F5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9C5306D-0F83-465D-B22E-8819D18CFDC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9C5306D-0F83-465D-B22E-8819D18CFDC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9C5306D-0F83-465D-B22E-8819D18CFDC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9C5306D-0F83-465D-B22E-8819D18CFDC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E908520C-835A-4C5F-85C4-4AB70AB79CC6} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
-		{22DA9F9E-A84F-47EE-A870-3CC845812606} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
-		{69C2391B-6FF0-41F8-82D3-89C6628D58FE} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
-		{7CAB7308-FE88-4F52-9ADE-370D1F92174F} = {C64E94A6-00A6-4B45-8117-498F5E17125A}
+		{C53FD9F4-E2F0-4E88-A4DB-478053389BA2} = {054F198C-4E9F-4D8A-BC6A-EB11D858732C}
+		{57AF67DE-0817-4326-AE67-A82F53E49197} = {054F198C-4E9F-4D8A-BC6A-EB11D858732C}
+		{054F198C-4E9F-4D8A-BC6A-EB11D858732C} = {CFFA42A9-BE2A-4407-9A93-6282901A27D3}
+		{9307DE2F-17A5-48D2-B14C-023DB6535F5D} = {054F198C-4E9F-4D8A-BC6A-EB11D858732C}
+		{E9C5306D-0F83-465D-B22E-8819D18CFDC1} = {054F198C-4E9F-4D8A-BC6A-EB11D858732C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D2DD47D6-04FA-4394-AE22-77E44B10EA32}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.projitems*{22da9f9e-a84f-47ee-a870-3cc845812606}*SharedItemsImports = 13
-		submodule\Bam.Core\tests\shared\bam.net.tests.shared\bam.net.tests.shared.projitems*{69c2391b-6ff0-41f8-82d3-89c6628d58fe}*SharedItemsImports = 5
-		submodule\Bam.Core\submodules\bam.net.shared\bam.net.shared.projitems*{e908520c-835a-4c5f-85c4-4ab70ab79cc6}*SharedItemsImports = 5
+		submodules\bam.core\submodules\bam.net.shared\bam.net.shared.projitems*{57af67de-0817-4326-ae67-a82f53e49197}*SharedItemsImports = 13
+		submodules\bam.core\submodules\bam.net.shared\bam.net.shared.projitems*{c53fd9f4-e2f0-4e88-a4db-478053389ba2}*SharedItemsImports = 5
+		submodules\bam.core\tests\shared\bam.net.tests.shared\bam.net.tests.shared.projitems*{e9c5306d-0f83-465d-b22e-8819d18cfdc1}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

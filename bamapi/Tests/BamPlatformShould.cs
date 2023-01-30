@@ -22,7 +22,7 @@ namespace Bam.Application.Test
         [UnitTest("BamPlatform.CreateServerAsync should create BamServer that responds to BamApi proxy GET.")]
         public async Task ServeUnencryptedService()
         {
-            BamServer bamServer = await BamPlatform.CreateServerAsync();
+            BamAppServer bamServer = await BamPlatform.CreateServerAsync();
             bamServer.AddCommonService<Echo>();
             bamServer.Start();
             
@@ -41,7 +41,7 @@ namespace Bam.Application.Test
         [UnitTest("BamPlatform.CreateServerAsync should create a BamServer that responds to encrypted proxy.")]
         public async Task ServeEncryptedService()
         {
-            BamServer bamServer = await BamPlatform.CreateServerAsync();
+            BamAppServer bamServer = await BamPlatform.CreateServerAsync();
             bamServer.AddCommonService<EncryptedEcho>();
             bamServer.Start();
 
