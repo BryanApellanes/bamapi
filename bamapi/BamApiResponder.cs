@@ -1,11 +1,12 @@
 using Bam.Net;
 using Bam.Net.Logging;
 using Bam.Net.Server;
-using Bam.Net.Server.JsonRpc;
-using Bam.Net.Server.Renderers;
+/*using Bam.Net.Server.JsonRpc;
+using Bam.Net.Server.Renderers;*/
 using Bam.Net.ServiceProxy;
 using System;
 using System.Collections.Generic;
+using Bam.Protocol;
 
 namespace Bam.Application
 {
@@ -19,10 +20,10 @@ namespace Bam.Application
         public BamApiResponder(BamConf conf, ILogger logger, bool verbose = false)
             : base(conf, logger)
         {
-            RendererFactory = new WebRendererFactory(logger);
+            /*RendererFactory = new WebRendererFactory(logger);
             ServiceProxyResponder = new ServiceProxyResponder(conf, logger);
-            RpcResponder = new JsonRpcResponder(conf, logger);
-            _responders = new Dictionary<string, IHttpResponder>
+            RpcResponder = new JsonRpcResponder(conf, logger);*/
+            /*_responders = new Dictionary<string, IHttpResponder>
             {
                 { ServiceProxyResponder.Name, ServiceProxyResponder },
                 { RpcResponder.Name, RpcResponder }
@@ -30,16 +31,17 @@ namespace Bam.Application
             if (verbose)
             {
                 WireResponseLogging();
-            }
+            }*/
         }
 
+        /*
         public void WireResponseLogging()
         {
             WireResponseLogging(ServiceProxyResponder, Logger);
             WireResponseLogging(RpcResponder, Logger);
-        }
+        }*/
 
-        public ServiceProxyResponder ServiceProxyResponder
+        /*public ServiceProxyResponder ServiceProxyResponder
         {
             get;
             private set;
@@ -49,7 +51,7 @@ namespace Bam.Application
         {
             get;
             private set;
-        }
+        }*/
 
         public override bool Respond(IHttpContext context)
         {
