@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ApplicationIcon>bamapi.ico</ApplicationIcon>
     <RootNamespace>Bam.Application</RootNamespace>
     <PackageId>bamapi.exe</PackageId>
@@ -35,6 +35,9 @@
     <ProjectReference Include="..\..\bam.base.services\bam.base.services\bam.base.services.csproj" />
     <ProjectReference Include="..\..\bam.base\bam.base\bam.base.csproj" />
     <ProjectReference Include="..\..\bam.server\bam.server\bam.server.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ArgumentAdder.cs" />
   </ItemGroup>
 
   <Target Name="PublishAll" BeforeTargets="GenerateNuspec">
